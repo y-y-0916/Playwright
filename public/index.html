@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Playwright Tutorial - Sample Page</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 10px;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .card {
+            background: white;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input, textarea, select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        button {
+            background-color: #667eea;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+        button:hover {
+            background-color: #5a6fd8;
+        }
+        .success {
+            color: green;
+            font-weight: bold;
+        }
+        .error {
+            color: red;
+            font-weight: bold;
+        }
+        .hidden {
+            display: none;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Playwright Tutorial Sample Page</h1>
+        <p>このページはPlaywrightのテスト練習用のサンプルページです</p>
+    </div>
+
+    <div class="card">
+        <h2>基本フォーム</h2>
+        <form id="basicForm">
+            <div class="form-group">
+                <label for="name">名前:</label>
+                <input type="text" id="name" name="name" required>
+            </div>
+            <div class="form-group">
+                <label for="email">メールアドレス:</label>
+                <input type="email" id="email" name="email" required>
+            </div>
+            <div class="form-group">
+                <label for="age">年齢:</label>
+                <input type="number" id="age" name="age" min="0" max="120">
+            </div>
+            <div class="form-group">
+                <label for="country">国:</label>
+                <select id="country" name="country">
+                    <option value="">選択してください</option>
+                    <option value="japan">日本</option>
+                    <option value="usa">アメリカ</option>
+                    <option value="korea">韓国</option>
+                    <option value="china">中国</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="message">メッセージ:</label>
+                <textarea id="message" name="message" rows="4"></textarea>
+            </div>
+            <button type="submit">送信</button>
+            <button type="button" id="clearBtn">クリア</button>
+        </form>
+        <div id="formResult" class="hidden"></div>
+    </div>
+
+    <div class="card">
+        <h2>インタラクティブ要素</h2>
+        <button id="showAlert">アラート表示</button>
+        <button id="showConfirm">確認ダイアログ表示</button>
+        <button id="showPrompt">入力ダイアログ表示</button>
+        <button id="changeColor">背景色変更</button>
+        <button id="addItem">アイテム追加</button>
+
+        <h3>動的リスト</h3>
+        <ul id="dynamicList">
+            <li>アイテム 1</li>
+            <li>アイテム 2</li>
+        </ul>
+    </div>
+
+    <div class="card">
+        <h2>データテーブル</h2>
+        <table id="dataTable">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>名前</th>
+                    <th>職業</th>
+                    <th>年齢</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>1</td>
+                    <td>田中太郎</td>
+                    <td>エンジニア</td>
+                    <td>30</td>
+                    <td><button onclick="deleteRow(this)">削除</button></td>
+                </tr>
+                <tr>
+                    <td>2</td>
+                    <td>佐藤花子</td>
+                    <td>デザイナー</td>
+                    <td>28</td>
+                    <td><button onclick="deleteRow(this)">削除</button></td>
+                </tr>
+                <tr>
+                    <td>3</td>
+                    <td>鈴木一郎</td>
+                    <td>マネージャー</td>
+                    <td>35</td>
+                    <td><button onclick="deleteRow(this)">削除</button></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="card">
+        <h2>非同期読み込み</h2>
+        <button id="loadData">データ読み込み</button>
+        <div id="loadingSpinner" class="hidden">読み込み中...</div>
+        <div id="loadedContent" class="hidden">
+            <h3>読み込み完了!</h3>
+            <p>非同期でデータが読み込まれました。</p>
+        </div>
+    </div>
+
+    <script>
+        // フォーム送信処理
+        document.getElementById('basicForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+            const result = document.getElementById('formResult');
+
+            let message = '<h3>送信されたデータ:</h3>';
+            for (let [key, value] of formData.entries()) {
+                message += `<p><strong>${key}:</strong> ${value}</p>`;
+            }
+
+            result.innerHTML = message;
+            result.className = 'success';
+            result.classList.remove('hidden');
+        });
+
+        // クリアボタン
+        document.getElementById('clearBtn').addEventListener('click', function() {
+            document.getElementById('basicForm').reset();
+            document.getElementById('formResult').classList.add('hidden');
+        });
+
+        // アラート表示
+        document.getElementById('showAlert').addEventListener('click', function() {
+            alert('これはアラートです！');
+        });
+
+        // 確認ダイアログ
+        document.getElementById('showConfirm').addEventListener('click', function() {
+            if (confirm('本当に実行しますか？')) {
+                alert('実行されました！');
+            }
+        });
+
+        // 入力ダイアログ
+        document.getElementById('showPrompt').addEventListener('click', function() {
+            const input = prompt('名前を入力してください:');
+            if (input) {
+                alert(`こんにちは、${input}さん！`);
+            }
+        });
+
+        // 背景色変更
+        const colors = ['#f5f5f5', '#e8f4f8', '#f0e8f8', '#e8f8e8', '#f8f0e8'];
+        let colorIndex = 0;
+        document.getElementById('changeColor').addEventListener('click', function() {
+            colorIndex = (colorIndex + 1) % colors.length;
+            document.body.style.backgroundColor = colors[colorIndex];
+        });
+
+        // アイテム追加
+        let itemCount = 2;
+        document.getElementById('addItem').addEventListener('click', function() {
+            itemCount++;
+            const li = document.createElement('li');
+            li.textContent = `アイテム ${itemCount}`;
+            document.getElementById('dynamicList').appendChild(li);
+        });
+
+        // テーブル行削除
+        function deleteRow(btn) {
+            if (confirm('この行を削除しますか？')) {
+                btn.closest('tr').remove();
+            }
+        }
+
+        // 非同期データ読み込み
+        document.getElementById('loadData').addEventListener('click', function() {
+            const spinner = document.getElementById('loadingSpinner');
+            const content = document.getElementById('loadedContent');
+
+            spinner.classList.remove('hidden');
+            content.classList.add('hidden');
+
+            // 2秒後にデータ読み込み完了をシミュレート
+            setTimeout(() => {
+                spinner.classList.add('hidden');
+                content.classList.remove('hidden');
+            }, 2000);
+        });
+    </script>
+</body>
+</html>

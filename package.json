@@ -1,0 +1,30 @@
+{
+  "name": "playwright-tutorial",
+  "version": "1.0.0",
+  "description": "Playwright tutorial project for learning E2E testing",
+  "main": "index.js",
+  "scripts": {
+    "test": "playwright test",
+    "test:headed": "playwright test --headed",
+    "test:ui": "playwright test --ui",
+    "test:debug": "playwright test --debug",
+    "test:local": "playwright test tests/local.spec.js",
+    "test:basic": "playwright test tests/example.spec.js",
+    "test:forms": "playwright test tests/forms.spec.js",
+    "test:advanced": "playwright test tests/advanced.spec.js",
+    "report": "playwright show-report",
+    "install-browsers": "playwright install",
+    "serve": "python3 -m http.server 3000 --directory public"
+  },
+  "keywords": [
+    "playwright",
+    "testing",
+    "e2e",
+    "tutorial"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "@playwright/test": "^1.55.0"
+  }
+}
